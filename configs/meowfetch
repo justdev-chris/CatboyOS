@@ -1,0 +1,48 @@
+#!/bin/bash
+# ─── MEOWFETCH ────────────────────────────────────────────────────
+# CatboyOS fetch script. Meow.
+
+# ─── COLORS ──────────────────────────────────────────────────────
+reset='\033[0m'
+bold='\033[1m'
+red='\033[31m'
+green='\033[32m'
+yellow='\033[33m'
+blue='\033[34m'
+magenta='\033[35m'
+cyan='\033[36m'
+white='\033[37m'
+
+# ─── ASCII CAT ──────────────────────────────────────────────────
+cat_art="
+  /\_/\\
+ ( o.o )
+  > ^ <
+"
+
+# ─── SYSTEM INFO ────────────────────────────────────────────────
+os=$(cat /etc/os-release | grep PRETTY_NAME | cut -d'"' -f2)
+kernel=$(uname -r)
+hostname=$(hostname)
+user=$(whoami)
+shell=$(basename $SHELL)
+uptime=$(uptime -p | sed 's/up //')
+packages=$(pacman -Q 2>/dev/null | wc -l)
+memory_total=$(free -h | awk '/^Mem:/ {print $2}')
+memory_used=$(free -h | awk '/^Mem:/ {print $3}')
+cpu=$(lscpu | grep "Model name" | head -1 | cut -d':' -f2 | xargs)
+
+# ─── OUTPUT ─────────────────────────────────────────────────────
+echo -e "${cyan}$cat_art${reset}"
+echo -e "${bold}${yellow}🐱 CatboyOS${reset}"
+echo -e "${cyan}   OS${reset}       ${white}$os${reset}"
+echo -e "${cyan}   Kernel${reset}   ${white}$kernel${reset}"
+echo -e "${cyan}   Hostname${reset} ${white}$hostname${reset}"
+echo -e "${cyan}   User${reset}     ${white}$user${reset}"
+echo -e "${cyan}   Shell${reset}    ${white}$shell${reset}"
+echo -e "${cyan}   Uptime${reset}   ${white}$uptime${reset}"
+echo -e "${cyan}   Packages${reset} ${white}$packages${reset}"
+echo -e "${cyan}   Memory${reset}   ${white}$memory_used / $memory_total${reset}"
+echo -e "${cyan}   CPU${reset}      ${white}$cpu${reset}"
+echo -e ""
+echo -e "${magenta}meow~ 🐾${reset}"
