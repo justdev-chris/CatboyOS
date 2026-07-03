@@ -1,0 +1,36 @@
+name: Build CatboyOS ISO
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install archiso
+        run: sudo apt update && sudo apt install archiso -y
+
+      - name: Copy configs & wallpapers
+        run: |
+          mkdir -p archlive/airootfs/etc/skel
+          cp -r configs/skel/* archlive/airootfs/etc/skel/
+          cp configs/kitty.conf archlive/airootfs/etc/
+          cp configs/i3.conf archlive/airootfs/etc/
+          cp configs/meowfetch archlive/airootfs/usr/bin/
+          mkdir -p archlive/airootfs/usr/share/wallpapers
+          cp wallpapers/* archlive/airootfs/usr/share/wallpapers/
+
+      - name: Build ISO
+        run: |
+          cd archlive
+          mkarchiso -v .
+
+      - name: Upload ISO
+        uses: actions/upload-artifact@v4
+        with:
+          name: catboyos
+          path: archlive/out/*.iso
