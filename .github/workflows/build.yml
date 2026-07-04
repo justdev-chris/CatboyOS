@@ -15,7 +15,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y xorriso squashfs-tools
+          sudo apt install -y xorriso squashfs-tools wget
 
       - name: Download Arch ISO
         run: |
@@ -42,8 +42,8 @@ jobs:
         run: |
           sudo xorriso -as mkisofs \
             -o catboyos.iso \
-            -b isolinux/isolinux.bin \
-            -c isolinux/boot.cat \
+            -b isolinux.bin \
+            -c boot.cat \
             -no-emul-boot \
             -boot-load-size 4 \
             -boot-info-table \
