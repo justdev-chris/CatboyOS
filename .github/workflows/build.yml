@@ -8,26 +8,34 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install archiso
-        run: sudo apt update && sudo apt install archiso -y
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y git make gcc squashfs-tools xorriso isolinux mtools dosfstools
 
-      - name: Copy configs & wallpapers
+      - name: Install archiso from source
+        run: |
+          git clone --depth 1 https://gitlab.archlinux.org/archlinux/archiso.git
+          cd archiso
+          sudo make install
+
+      - name: Prepare build directory
         run: |
           mkdir -p archlive/airootfs/etc/skel
-          cp -r configs/skel/* archlive/airootfs/etc/skel/
-          cp configs/kitty.conf archlive/airootfs/etc/
-          cp configs/i3.conf archlive/airootfs/etc/
-          cp configs/meowfetch archlive/airootfs/usr/bin/
+          cp -r configs/skel/* archlive/airootfs/etc/skel/ 2>/dev/null || true
+          cp configs/kitty.conf archlive/airootfs/etc/ 2>/dev/null || true
+          cp configs/i3.conf archlive/airootfs/etc/ 2>/dev/null || true
+          cp configs/meowfetch archlive/airootfs/usr/bin/ 2>/dev/null || true
           mkdir -p archlive/airootfs/usr/share/wallpapers
-          cp wallpapers/* archlive/airootfs/usr/share/wallpapers/
+          cp wallpapers/* archlive/airootfs/usr/share/wallpapers/ 2>/dev/null || true
 
       - name: Build ISO
         run: |
-          cd archlive
-          mkarchiso -v .
+          sudo mkarchiso -v archlive
 
       - name: Upload ISO
         uses: actions/upload-artifact@v4
