@@ -12,33 +12,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Download Arch ISO
         run: |
-          sudo apt update
-          sudo apt install -y git make gcc squashfs-tools xorriso isolinux mtools dosfstools
+          wget -O archlinux.iso https://mirror.rackspace.com/archlinux/iso/latest/archlinux-x86_64.iso
 
-      - name: Install archiso from source
+      - name: Mount and customize ISO
         run: |
-          git clone --depth 1 https://gitlab.archlinux.org/archlinux/archiso.git
-          cd archiso
-          sudo make install
+          mkdir -p iso_mount
+          sudo mount -o loop archlinux.iso iso_mount
+          mkdir -p iso_custom
+          cp -r iso_mount/* iso_custom/
+          sudo umount iso_mount
+          
+          # Add CatboyOS configs to the ISO
+          mkdir -p iso_custom/arch/airootfs/etc/skel
+          cp -r configs/skel/* iso_custom/arch/airootfs/etc/skel/ 2>/dev/null || true
+          cp configs/kitty.conf iso_custom/arch/airootfs/etc/ 2>/dev/null || true
+          cp configs/i3.conf iso_custom/arch/airootfs/etc/ 2>/dev/null || true
+          cp configs/meowfetch iso_custom/arch/airootfs/usr/bin/ 2>/dev/null || true
+          mkdir -p iso_custom/arch/airootfs/usr/share/wallpapers
+          cp wallpapers/* iso_custom/arch/airootfs/usr/share/wallpapers/ 2>/dev/null || true
 
-      - name: Prepare build directory
+      - name: Create new ISO
         run: |
-          mkdir -p archlive/airootfs/etc/skel
-          cp -r configs/skel/* archlive/airootfs/etc/skel/ 2>/dev/null || true
-          cp configs/kitty.conf archlive/airootfs/etc/ 2>/dev/null || true
-          cp configs/i3.conf archlive/airootfs/etc/ 2>/dev/null || true
-          cp configs/meowfetch archlive/airootfs/usr/bin/ 2>/dev/null || true
-          mkdir -p archlive/airootfs/usr/share/wallpapers
-          cp wallpapers/* archlive/airootfs/usr/share/wallpapers/ 2>/dev/null || true
-
-      - name: Build ISO
-        run: |
-          sudo mkarchiso -v archlive
+          sudo mkisofs -o catboyos.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -J -R -V "CATBOYOS" iso_custom/
 
       - name: Upload ISO
         uses: actions/upload-artifact@v4
         with:
           name: catboyos
-          path: archlive/out/*.iso
+          path: catboyos.iso
