@@ -15,7 +15,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y xorriso squashfs-tools wget
+          sudo apt install -y xorriso squashfs-tools wget genisoimage
 
       - name: Download Arch ISO
         run: |
@@ -28,7 +28,7 @@ jobs:
           mkdir -p iso_custom
           sudo cp -r iso_mount/* iso_custom/
           sudo umount iso_mount
-          
+
           # Add CatboyOS configs
           sudo mkdir -p iso_custom/arch/airootfs/etc/skel
           sudo cp -r configs/skel/* iso_custom/arch/airootfs/etc/skel/ 2>/dev/null || true
@@ -38,12 +38,15 @@ jobs:
           sudo mkdir -p iso_custom/arch/airootfs/usr/share/wallpapers
           sudo cp wallpapers/* iso_custom/arch/airootfs/usr/share/wallpapers/ 2>/dev/null || true
 
+      - name: Find isolinux.bin
+        run: |
+          find iso_custom/ -name "isolinux.bin"
+
       - name: Create new ISO
         run: |
-          sudo xorriso -as mkisofs \
-            -o catboyos.iso \
-            -b isolinux.bin \
-            -c boot.cat \
+          sudo mkisofs -o catboyos.iso \
+            -b isolinux/isolinux.bin \
+            -c isolinux/boot.cat \
             -no-emul-boot \
             -boot-load-size 4 \
             -boot-info-table \
