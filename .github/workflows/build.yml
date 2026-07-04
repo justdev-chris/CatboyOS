@@ -21,17 +21,17 @@ jobs:
           mkdir -p iso_mount
           sudo mount -o loop archlinux.iso iso_mount
           mkdir -p iso_custom
-          cp -r iso_mount/* iso_custom/
+          sudo cp -r iso_mount/* iso_custom/
           sudo umount iso_mount
           
           # Add CatboyOS configs to the ISO
-          mkdir -p iso_custom/arch/airootfs/etc/skel
-          cp -r configs/skel/* iso_custom/arch/airootfs/etc/skel/ 2>/dev/null || true
-          cp configs/kitty.conf iso_custom/arch/airootfs/etc/ 2>/dev/null || true
-          cp configs/i3.conf iso_custom/arch/airootfs/etc/ 2>/dev/null || true
-          cp configs/meowfetch iso_custom/arch/airootfs/usr/bin/ 2>/dev/null || true
-          mkdir -p iso_custom/arch/airootfs/usr/share/wallpapers
-          cp wallpapers/* iso_custom/arch/airootfs/usr/share/wallpapers/ 2>/dev/null || true
+          sudo mkdir -p iso_custom/arch/airootfs/etc/skel
+          sudo cp -r configs/skel/* iso_custom/arch/airootfs/etc/skel/ 2>/dev/null || true
+          sudo cp configs/kitty.conf iso_custom/arch/airootfs/etc/ 2>/dev/null || true
+          sudo cp configs/i3.conf iso_custom/arch/airootfs/etc/ 2>/dev/null || true
+          sudo cp configs/meowfetch iso_custom/arch/airootfs/usr/bin/ 2>/dev/null || true
+          sudo mkdir -p iso_custom/arch/airootfs/usr/share/wallpapers
+          sudo cp wallpapers/* iso_custom/arch/airootfs/usr/share/wallpapers/ 2>/dev/null || true
 
       - name: Create new ISO
         run: |
