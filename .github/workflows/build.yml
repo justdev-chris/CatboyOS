@@ -38,15 +38,11 @@ jobs:
           sudo mkdir -p iso_custom/arch/airootfs/usr/share/wallpapers
           sudo cp wallpapers/* iso_custom/arch/airootfs/usr/share/wallpapers/ 2>/dev/null || true
 
-      - name: Find isolinux.bin
-        run: |
-          find iso_custom/ -name "isolinux.bin"
-
       - name: Create new ISO
         run: |
           sudo mkisofs -o catboyos.iso \
-            -b isolinux/isolinux.bin \
-            -c isolinux/boot.cat \
+            -b boot/syslinux/isolinux.bin \
+            -c boot/syslinux/boot.cat \
             -no-emul-boot \
             -boot-load-size 4 \
             -boot-info-table \
